@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from flask import Flask, Response, render_template
 
+from neural-style-transfer import neural_style
 app = Flask(__name__)
 
 camera = cv2.VideoCapture(0)
@@ -193,9 +194,24 @@ def detect_face():
         if not success:
             break
         else:
+            image = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            style = Image.open(r"C:\Users\Lakshmi\Downloads\Screenshot 2023-06-26 202520.jpg")
+            frame = 
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+def style_transfer():
+    while True:
+        success, frame = camera.read()
+        if not success:
+            break
+        else:
             face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
             image = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            style= Image.open(r"C:\Users\Lakshmi\Downloads\Screenshot 2023-06-26 202520.jpg")
+            frame = neural_style(image, style)
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
@@ -238,6 +254,11 @@ def video_feed8():
 @app.route('/video_feed7')
 def video_feed9():
     return Response(eye(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/video_feed8')
+def video_feed10():
+    return Response(style_transfer(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 
 if __name__ == '__main__':
